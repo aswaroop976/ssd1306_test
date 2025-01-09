@@ -1,0 +1,33 @@
+[package]
+name = "ssd1306_test"
+version = "0.1.0"
+authors = ["Arpan Swaroop <arpan.swaroop@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+embedded-graphics = "0.8.1"
+panic-probe = { version = "0.3.1", features = ["defmt"] }
+panic-semihosting = "0.6.0"
+rtt-target = "0.6.1"
+ssd1306 = "0.9.0"
+
+
+[dependencies.stm32f4xx-hal]
+version = "0.20.0"
+features = ["stm32f411", "defmt", ]
+
+[build-dependencies]
+reqwest = { version = "0.11", features = ["blocking"] }
+
+# Set the default for dependencies.
+[profile.dev.package."*"]
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1
+incremental = false
+debug = true
+lto = true
+opt-level = "s"

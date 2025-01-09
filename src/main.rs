@@ -55,51 +55,56 @@ fn main() -> ! {
         disp.init().unwrap();
         disp.flush().unwrap();
 
-        // Display the rustacean
-        let raw_image: ImageRaw<BinaryColor> =
-            ImageRaw::new(include_bytes!(".././ssd1306-image.data"), 128);
-        let image = Image::new(&raw_image, Point::zero());
-        image.draw(&mut disp).unwrap();
+        // Draw a single pixel at (10, 10)
+        Pixel(Point::new(10, 10), BinaryColor::On)
+            .draw(&mut disp)
+            .unwrap();
+
+        // Flush the display to apply the changes
         disp.flush().unwrap();
 
-        // Set up state for the loop
-        // let mut orientation = DisplayRotation::Rotate0;
-        // let mut was_pressed = btn.is_low();
+        // Draw a single pixel at (10, 10)
+        Pixel(Point::new(11, 10), BinaryColor::On)
+            .draw(&mut disp)
+            .unwrap();
 
-        // This runs continuously, as fast as possible
-        loop {
-            // Check if the button has just been pressed.
-            // Remember, active low.
-            //     let is_pressed = btn.is_low();
-            //     if !was_pressed && is_pressed {
-            //         // Since the button was pressed, flip the screen upside down
-            //         orientation = get_next_rotation(orientation);
-            //         disp.set_rotation(orientation).unwrap();
-            //         // Now that we've flipped the screen, store the fact that the button is pressed.
-            //         was_pressed = true;
-            //     } else if !is_pressed {
-            //         // If the button is released, confirm this so that next time it's pressed we'll
-            //         // know it's time to flip the screen.
-            //         was_pressed = false;
-            //     }
-        }
+        // Flush the display to apply the changes
+        disp.flush().unwrap();
+
+        // Draw a single pixel at (10, 10)
+        Pixel(Point::new(12, 10), BinaryColor::On)
+            .draw(&mut disp)
+            .unwrap();
+
+        // Flush the display to apply the changes
+        disp.flush().unwrap();
+
+        // Draw a single pixel at (10, 10)
+        Pixel(Point::new(10, 11), BinaryColor::On)
+            .draw(&mut disp)
+            .unwrap();
+
+        // Flush the display to apply the changes
+        disp.flush().unwrap();
+
+        // Draw a single pixel at (10, 10)
+        Pixel(Point::new(10, 12), BinaryColor::On)
+            .draw(&mut disp)
+            .unwrap();
+
+        // Flush the display to apply the changes
+        disp.flush().unwrap();
+
+        // Draw a single pixel at (10, 10)
+        Pixel(Point::new(1, 1), BinaryColor::On)
+            .draw(&mut disp)
+            .unwrap();
+
+        // Flush the display to apply the changes
+        disp.flush().unwrap();
     }
 
     loop {}
-}
-
-/// Helper function - what rotation flips the screen upside down from
-/// the rotation we're in now?
-fn get_next_rotation(rotation: DisplayRotation) -> DisplayRotation {
-    match rotation {
-        DisplayRotation::Rotate0 => DisplayRotation::Rotate180,
-        DisplayRotation::Rotate180 => DisplayRotation::Rotate0,
-
-        // Default branch - if for some reason we end up in one of the portrait modes,
-        // reset to 0 degrees landscape. On most SSD1306 displays, this means down is towards
-        // the flat flex coming out of the display (and up is towards the breakout board pins).
-        _ => DisplayRotation::Rotate0,
-    }
 }
 
 #[exception]

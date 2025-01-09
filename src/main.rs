@@ -31,9 +31,9 @@ fn main() -> ! {
     ) {
         // Set up the system clock. We want to run at 48MHz for this one.
         let rcc = dp.RCC.constrain();
-        let clocks = rcc.cfgr.sysclk(48.MHz()).freeze();
+        let clocks = rcc.cfgr.sysclk(100.MHz()).freeze();
 
-        // Set up I2C - SCL is PB8 and SDA is PB9; they are set to Alternate Function 4
+        // Set up I2C - SCL is PB6 and SDA is PB7; they are set to Alternate Function 4
         // as per the STM32F446xC/E datasheet page 60. Pin assignment as per the Nucleo-F446 board.
         let gpiob = dp.GPIOB.split();
         let scl = gpiob.pb6.internal_pull_up(true);
@@ -45,8 +45,8 @@ fn main() -> ! {
         // There's a button on PC13. On the Nucleo board, it's pulled up by a 4.7kOhm resistor
         // and therefore is active LOW. There's even a 100nF capacitor for debouncing - nice for us
         // since otherwise we'd have to debounce in software.
-        let gpioc = dp.GPIOC.split();
-        let btn = gpioc.pc13.into_pull_down_input();
+        // let gpioc = dp.GPIOC.split();
+        // let btn = gpioc.pc13.into_pull_down_input();
 
         // Set up the display
         let interface = I2CDisplayInterface::new(i2c);
@@ -63,25 +63,25 @@ fn main() -> ! {
         disp.flush().unwrap();
 
         // Set up state for the loop
-        let mut orientation = DisplayRotation::Rotate0;
-        let mut was_pressed = btn.is_low();
+        // let mut orientation = DisplayRotation::Rotate0;
+        // let mut was_pressed = btn.is_low();
 
         // This runs continuously, as fast as possible
         loop {
             // Check if the button has just been pressed.
             // Remember, active low.
-            let is_pressed = btn.is_low();
-            if !was_pressed && is_pressed {
-                // Since the button was pressed, flip the screen upside down
-                orientation = get_next_rotation(orientation);
-                disp.set_rotation(orientation).unwrap();
-                // Now that we've flipped the screen, store the fact that the button is pressed.
-                was_pressed = true;
-            } else if !is_pressed {
-                // If the button is released, confirm this so that next time it's pressed we'll
-                // know it's time to flip the screen.
-                was_pressed = false;
-            }
+            //     let is_pressed = btn.is_low();
+            //     if !was_pressed && is_pressed {
+            //         // Since the button was pressed, flip the screen upside down
+            //         orientation = get_next_rotation(orientation);
+            //         disp.set_rotation(orientation).unwrap();
+            //         // Now that we've flipped the screen, store the fact that the button is pressed.
+            //         was_pressed = true;
+            //     } else if !is_pressed {
+            //         // If the button is released, confirm this so that next time it's pressed we'll
+            //         // know it's time to flip the screen.
+            //         was_pressed = false;
+            //     }
         }
     }
 

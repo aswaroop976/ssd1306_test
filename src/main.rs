@@ -1,28 +1,22 @@
-//! Draw Ferris the Rust mascot on an SSD1306 display
-//!
-//! For example, to run on an STM32F411 Nucleo
-//! dev board, run the following:
-//!
-//! ```bash
-//! cargo run --features stm32f411--release --example ssd1306-image
-//! ```
-//!
-//! Note that `--release` is required to fix link errors for smaller devices.
-
 #![allow(clippy::empty_loop)]
 #![no_std]
 #![no_main]
 
-use panic_semihosting as _;
-use stm32f4xx_hal as hal;
-
 use cortex_m_rt::ExceptionFrame;
 use cortex_m_rt::{entry, exception};
-use embedded_graphics::{image::Image, image::ImageRaw, pixelcolor::BinaryColor, prelude::*};
+use embedded_graphics::{pixelcolor::BinaryColor, prelude::*};
+use panic_semihosting as _;
+use rtt_target::rprintln;
 use ssd1306::{prelude::*, I2CDisplayInterface, Ssd1306};
+use stm32f4xx_hal as hal;
 
-use crate::hal::{pac, prelude::*};
-
+use crate::hal::{
+    gpio::{self, Output, PushPull},
+    pac::{interrupt, Interrupt},
+    prelude::*,
+};
+use core::cell::RefCell;
+use cortex_m::interrupt::Mutex;
 #[entry]
 fn main() -> ! {
     if let (Some(dp), Some(_cp)) = (

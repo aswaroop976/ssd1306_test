@@ -62,46 +62,6 @@ fn main() -> ! {
 
         // Flush the display to apply the changes
         disp.flush().unwrap();
-
-        // Draw a single pixel at (10, 10)
-        Pixel(Point::new(11, 10), BinaryColor::On)
-            .draw(&mut disp)
-            .unwrap();
-
-        // Flush the display to apply the changes
-        disp.flush().unwrap();
-
-        // Draw a single pixel at (10, 10)
-        Pixel(Point::new(12, 10), BinaryColor::On)
-            .draw(&mut disp)
-            .unwrap();
-
-        // Flush the display to apply the changes
-        disp.flush().unwrap();
-
-        // Draw a single pixel at (10, 10)
-        Pixel(Point::new(10, 11), BinaryColor::On)
-            .draw(&mut disp)
-            .unwrap();
-
-        // Flush the display to apply the changes
-        disp.flush().unwrap();
-
-        // Draw a single pixel at (10, 10)
-        Pixel(Point::new(10, 12), BinaryColor::On)
-            .draw(&mut disp)
-            .unwrap();
-
-        // Flush the display to apply the changes
-        disp.flush().unwrap();
-
-        // Draw a single pixel at (10, 10)
-        Pixel(Point::new(1, 1), BinaryColor::On)
-            .draw(&mut disp)
-            .unwrap();
-
-        // Flush the display to apply the changes
-        disp.flush().unwrap();
     }
 
     loop {}

@@ -6,19 +6,18 @@ use cortex_m_rt::ExceptionFrame;
 use cortex_m_rt::{entry, exception};
 use embedded_graphics::{pixelcolor::BinaryColor, prelude::*};
 use panic_semihosting as _;
-use rtt_target::rprintln;
+use rtt_target::{rprintln, rtt_init_print};
 use ssd1306::{prelude::*, I2CDisplayInterface, Ssd1306};
-use stm32f4xx_hal as hal;
+use stm32f4xx_hal::{self as hal, pac};
 
 use crate::hal::{
-    gpio::{self, Output, PushPull},
-    pac::{interrupt, Interrupt},
+    gpio::{gpiob::PB0, gpiob::PB1, Input, Output, PushPull},
+    pac::Interrupt,
     prelude::*,
 };
-use core::cell::RefCell;
-use cortex_m::interrupt::Mutex;
 #[entry]
 fn main() -> ! {
+    rtt_init_print!();
     if let (Some(dp), Some(_cp)) = (
         pac::Peripherals::take(),
         cortex_m::peripheral::Peripherals::take(),
@@ -28,19 +27,16 @@ fn main() -> ! {
         let clocks = rcc.cfgr.sysclk(100.MHz()).freeze();
 
         // Set up I2C - SCL is PB6 and SDA is PB7; they are set to Alternate Function 4
-        // as per the STM32F446xC/E datasheet page 60. Pin assignment as per the Nucleo-F446 board.
         let gpiob = dp.GPIOB.split();
         let scl = gpiob.pb6.internal_pull_up(true);
         let sda = gpiob.pb7.internal_pull_up(true);
-        // let i2c = I2c::new(dp.I2C1, (scl, sda), 400.kHz(), &clocks);
-        // or
-        let i2c = dp.I2C1.i2c((scl, sda), 400.kHz(), &clocks);
+        // Configure PB0 as an output pin (connected to one side of the button)
+        let mut output_pin: PB0<Output<PushPull>> = gpiob.pb0.into_push_pull_output();
+        // Configure PB1 as an input pin as pull down input
+        let input_pin: PB1<Input> = gpiob.pb1.into_pull_down_input();
 
-        // There's a button on PC13. On the Nucleo board, it's pulled up by a 4.7kOhm resistor
-        // and therefore is active LOW. There's even a 100nF capacitor for debouncing - nice for us
-        // since otherwise we'd have to debounce in software.
-        // let gpioc = dp.GPIOC.split();
-        // let btn = gpioc.pc13.into_pull_down_input();
+        output_pin.set_high();
+        let i2c = dp.I2C1.i2c((scl, sda), 400.kHz(), &clocks);
 
         // Set up the display
         let interface = I2CDisplayInterface::new(i2c);
@@ -49,13 +45,29 @@ fn main() -> ! {
         disp.init().unwrap();
         disp.flush().unwrap();
 
-        // Draw a single pixel at (10, 10)
-        Pixel(Point::new(10, 10), BinaryColor::On)
-            .draw(&mut disp)
-            .unwrap();
+        let mut i: i32 = 0;
+        let mut j: i32 = 0;
+        loop {
+            if input_pin.is_high() {
+                if i < 127 {
+                    i += 1;
+                } else if j < 63 {
+                    i = 0;
+                    j += 1;
+                }
 
-        // Flush the display to apply the changes
-        disp.flush().unwrap();
+                Pixel(Point::new(i.into(), j), BinaryColor::On)
+                    .draw(&mut disp)
+                    .unwrap();
+
+                // Flush the display to apply the changes
+                disp.flush().unwrap();
+                rprintln!("pressed");
+                rprintln!("i is: {}", i);
+            } else {
+                rprintln!("not pressed");
+            }
+        }
     }
 
     loop {}

@@ -50,15 +50,13 @@ fn main() -> ! {
 
     let mut chip8 = Chip8::new();
 
-    //let mut i: i32 = 0;
-    //let mut j: i32 = 0;
     loop {
         // Draw logic here =====================================================
         disp.flush().unwrap();
         for (i, &pixel) in chip8.screen.iter().enumerate() {
             if pixel == 1 {
-                let x = (i % SCREEN_WIDTH) as i32;
-                let y = (i / SCREEN_WIDTH) as i32;
+                let x = 32 + ((i % SCREEN_WIDTH) as i32);
+                let y = 17 + (i / SCREEN_WIDTH) as i32;
                 Pixel(Point::new(x, y), BinaryColor::On)
                     .draw(&mut disp)
                     .unwrap();

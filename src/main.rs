@@ -50,7 +50,16 @@ fn main() -> ! {
 
     let mut chip8 = Chip8::new();
 
+    // Load ROM ================================================================
+    //const CHIP8_ROM: &[u8] = include_bytes!("../test_opcode.ch8");
+    const CHIP8_ROM: &[u8] = include_bytes!("../Chip8 Picture.ch8");
+    //const CHIP8_ROM: &[u8] = include_bytes!("../Life [GV Samways, 1980].ch8");
+    // Load the program into the CHIP-8 emulator
+    chip8.load_program(&CHIP8_ROM);
+
     loop {
+        // Emulate cycle:
+        chip8.emulate_cycle();
         // Draw logic here =====================================================
         disp.flush().unwrap();
         for (i, &pixel) in chip8.screen.iter().enumerate() {

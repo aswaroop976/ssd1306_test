@@ -30,7 +30,7 @@ impl Chip8 {
             registers: [0; REGISTER_COUNT],
             index_register: 0,
             program_counter: PROGRAM_START_ADDRESS as u16, // Programs start at 0x200
-            screen: [1; SCREEN_WIDTH * SCREEN_HEIGHT],
+            screen: [0; SCREEN_WIDTH * SCREEN_HEIGHT],
             delay_timer: 0,
             sound_timer: 0,
             stack: [0; STACK_SIZE],
@@ -85,6 +85,12 @@ impl Chip8 {
             Chip8::op_exxx,          // 0xEXXX group
             Chip8::op_fxxx,          // 0xFXXX group
         ]
+    }
+
+    pub fn load_program(&mut self, program: &[u8]) {
+        for (i, &byte) in program.iter().enumerate() {
+            self.memory[0x200 + i] = byte;
+        }
     }
 
     pub fn emulate_cycle(&mut self) {

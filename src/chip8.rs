@@ -17,8 +17,8 @@ pub struct Chip8 {
     pub screen: [u8; SCREEN_WIDTH * SCREEN_HEIGHT], // 64x32 pixel display
     pub delay_timer: u8,
     pub sound_timer: u8,
-    pub stack: [u16; STACK_SIZE], // stack with 16 levels
-    pub stack_pointer: u8,        // stack pointer
+    pub return_stack: [u16; STACK_SIZE], // return_stack with 16 levels
+    pub stack_pointer: u8,        // return_stack pointer
     pub keys: [u8; REGISTER_COUNT],
     pub jump_table: [OpcodeHandler; 16],
 }
@@ -26,14 +26,14 @@ pub struct Chip8 {
 impl Chip8 {
     pub fn new() -> Chip8 {
         let mut chip8 = Chip8 {
-            memory: [0; MEMORY_SIZE], //figure it retard
+            memory: [0; MEMORY_SIZE], 
             registers: [0; REGISTER_COUNT],
             index_register: 0,
             program_counter: PROGRAM_START_ADDRESS as u16, // Programs start at 0x200
             screen: [0; SCREEN_WIDTH * SCREEN_HEIGHT],
             delay_timer: 0,
             sound_timer: 0,
-            stack: [0; STACK_SIZE],
+            return_stack: [0; STACK_SIZE],
             stack_pointer: 0,
             keys: [0; REGISTER_COUNT],
             jump_table: Chip8::create_jump_table(),
@@ -171,7 +171,7 @@ impl Chip8 {
     // Instruction: return from a subroutine
     fn ret(&mut self) {
         self.stack_pointer -= 1;
-        self.program_counter = self.stack[self.stack_pointer as usize];
+        self.program_counter = self.return_stack[self.stack_pointer as usize];
     }
 
     // JP - 1NNN
@@ -185,7 +185,7 @@ impl Chip8 {
     // Instruction: call subroutine at NNN
     fn call(&mut self, opcode: u16) {
         let address = opcode & 0x0FFF;
-        self.stack[self.stack_pointer as usize] = self.program_counter;
+        self.return_stack[self.stack_pointer as usize] = self.program_counter;
         self.stack_pointer += 1;
         self.program_counter = address;
     }

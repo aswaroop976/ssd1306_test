@@ -25,7 +25,7 @@ use crate::hal::{
 fn main() -> ! {
     rtt_init_print!();
     let dp = pac::Peripherals::take().unwrap();
-    // Set up the system clock. We want to run at 48MHz for this one.
+    // Set up the system clock. 
     let rcc = dp.RCC.constrain();
     let clocks = rcc.cfgr.sysclk(100.MHz()).freeze();
 

@@ -18,7 +18,7 @@ pub struct Chip8 {
     pub delay_timer: u8,
     pub sound_timer: u8,
     pub return_stack: [u16; STACK_SIZE], // return_stack with 16 levels
-    pub stack_pointer: u8,        // return_stack pointer
+    pub stack_pointer: u8,               // return_stack pointer
     pub keys: [u8; REGISTER_COUNT],
     pub jump_table: [OpcodeHandler; 16],
 }
@@ -26,7 +26,7 @@ pub struct Chip8 {
 impl Chip8 {
     pub fn new() -> Chip8 {
         let mut chip8 = Chip8 {
-            memory: [0; MEMORY_SIZE], 
+            memory: [0; MEMORY_SIZE],
             registers: [0; REGISTER_COUNT],
             index_register: 0,
             program_counter: PROGRAM_START_ADDRESS as u16, // Programs start at 0x200
